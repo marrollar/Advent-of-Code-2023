@@ -85,5 +85,5 @@ if __name__ == '__main__':
 
         games.append((game_id, draws_parsed))
 
-    # cube_conundrum_1(games)
+    cube_conundrum_1(games)
     cube_conundrum_2(games)
