@@ -2,10 +2,7 @@ def scratchcards_1(deck):
     points = 0
 
     for _, have, winning_nums in deck:
-        exponent = -1
-        for num in have:
-            if num in winning_nums:
-                exponent += 1
+        exponent = -1 + sum(1 for num in have if num in winning_nums)
 
         if exponent >= 0:
             points += 2 ** exponent
@@ -17,14 +14,6 @@ def scratchcards_2(deck):
     stack = [deck[-1]]
     memo = {len(deck): 0}
     total_scratchcards = 0
-
-    def find_winners(have, winning_nums):
-        won = 0
-        for num in have:
-            if num in winning_nums:
-                won += 1
-
-        return won
 
     deck_ind = 1
 
@@ -39,15 +28,12 @@ def scratchcards_2(deck):
         try:
             total_scratchcards += memo[scratchcard_ind]
         except KeyError:
-            copies_to_add = find_winners(have, winning_nums)
+            copies_to_add = sum(1 for num in have if num in winning_nums)
+            memo[scratchcard_ind] = copies_to_add
 
-            memo[scratchcard_ind] = copies_to_add + sum(
-                [memo[i]
-                 for i in range(scratchcard_ind + 1, min(len(deck), scratchcard_ind + 1 + copies_to_add))
-                 ])
-
-            for hand in deck[scratchcard_ind + 1:scratchcard_ind + 1 + copies_to_add]:
-                stack.append(hand)
+            for i in range(scratchcard_ind + 1, min(len(deck), scratchcard_ind + 1 + copies_to_add)):
+                memo[scratchcard_ind] += memo[i]
+                stack.append(deck[i])
 
     print(total_scratchcards)
 
