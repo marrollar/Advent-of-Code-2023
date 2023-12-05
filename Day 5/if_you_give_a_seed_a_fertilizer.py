@@ -1,3 +1,7 @@
+from interval_math import *
+import math
+
+
 def if_you_give_a_seed_a_fertilizer_1(mappings):
     seeds = mappings["seeds"]
     seed_to_soil = mappings["seed-to-soil map"]
@@ -38,7 +42,7 @@ def if_you_give_a_seed_a_fertilizer_2(mappings):
     temperature_to_humidity = mappings["temperature-to-humidity map"]
     humidity_to_location = mappings["humidity-to-location map"]
 
-    seed_final_locations = []
+    min_seed_loc = math.inf
 
     search_order = [seed_to_soil, soil_to_fertilizer, fertilizer_to_water, water_to_light, light_to_temperature,
                     temperature_to_humidity, humidity_to_location]
@@ -54,57 +58,31 @@ def if_you_give_a_seed_a_fertilizer_2(mappings):
                 range_start, range_range = current_ranges.pop(0)
 
                 for dst_start, src_start, rge in current_mapping:
+                    clamped_interval, split_interval = find_split(range_start, range_range, src_start, rge)
 
-                    if src_start <= range_start < src_start + rge:
-                        checked_tuple, split_tuple = find_split(range_start, range_range, src_start, rge)
+                    if clamped_interval:
+                        transformed_start = rescale(clamped_interval[0], src_start, dst_start)
 
-                        new_start = rescale(range_start, src_start, dst_start)
-                        # new_ranges.append((new_start, checked_tuple[1]))
+                        range_start = transformed_start
+                        range_range = clamped_interval[1]
 
-                        range_start = new_start
-                        range_range = checked_tuple[1]
-
-                        if split_tuple:
-                            current_ranges.append(split_tuple)
+                        if split_interval:
+                            current_ranges.append(split_interval)
 
                         break
 
                 new_ranges.append((range_start, range_range))
 
-                # src_end = src_start + rge
-                #
-                # if src_start <= range_start < src_end:
-
-                # start_delta = range_start - src_start
-                # split_loc = range_end - src_end
-                #
-                # if split_loc >= 0:
-                #     remaining_range = range_end - split_loc
-                #
-                #     current_ranges.append((split_loc, split_loc + remaining_range))
-                # else:
-                #     new_ranges.append((
-                #         dst_start + start_delta,
-                #         dst_start + start_delta + (range_end - range_start)
-                #     ))
-
             current_ranges, new_ranges = new_ranges, current_ranges
 
-            # new_ranges.append((start_delta, split_loc))
+        for start, interval_range in current_ranges:
+            min_seed_loc = min(min_seed_loc, start)
 
-            #     delta = current_loc - src
-            #     current_loc = dst + delta
-            #     break
-
-        #     current_seed_set.append(current_loc)
-        #
-        # seed_final_locations.append(min(current_seed_set))
-
-    print(min(seed_final_locations))
+    print(min_seed_loc)
 
 
 if __name__ == '__main__':
-    inp_file = open("almanac_simple", "r")
+    inp_file = open("almanac", "r")
 
     mappings = {}
 
@@ -129,5 +107,12 @@ if __name__ == '__main__':
         else:
             mappings[last_mapping].append(tuple(int(num) for num in line.split()))
 
+    import time
+
+    start = time.perf_counter()
     if_you_give_a_seed_a_fertilizer_1(mappings)
+    print(time.perf_counter() - start)
+
+    start = time.perf_counter()
     if_you_give_a_seed_a_fertilizer_2(mappings)
+    print(time.perf_counter() - start)

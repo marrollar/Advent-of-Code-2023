@@ -1,19 +1,3 @@
-# def find_split(orig_start, orig_range, src_start, src_range):
-#     orig_end = orig_start + orig_range
-#     new_end = src_start + src_range
-#
-#     if new_end < orig_end:
-#         remaining_range = orig_end - new_end
-#         split_loc = orig_start + (orig_range - remaining_range)
-#
-#         split_range = split_loc - orig_start
-#         # orig_start
-#
-#         return (orig_start, split_range), (split_loc, remaining_range)
-#     else:
-#         return (orig_start, orig_range), None
-
-
 def find_split(src_start, src_range, tgt_start, tgt_range):
     src_end = src_start + src_range  # exclusive
     tgt_end = tgt_start + tgt_range
