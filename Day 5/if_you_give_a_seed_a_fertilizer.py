@@ -28,27 +28,6 @@ def if_you_give_a_seed_a_fertilizer_1(mappings):
     print(min(seed_final_locations))
 
 
-def find_split(orig_start, orig_range, src_start, src_range):
-    orig_end = orig_start + orig_range
-    new_end = src_start + src_range
-
-    if new_end <= orig_end:
-        remaining_range = orig_end - new_end
-        split_loc = orig_start + (orig_range - remaining_range)
-
-        split_range = split_loc - orig_start
-        # orig_start
-
-        return (orig_start, split_range), (split_loc, remaining_range)
-    else:
-        return (orig_start, orig_range), None
-
-
-def rescale(orig_start, src_start, dst_start):
-    delta = src_start - orig_start
-    return dst_start + delta
-
-
 def if_you_give_a_seed_a_fertilizer_2(mappings):
     seeds = mappings["seeds"]
     seed_to_soil = mappings["seed-to-soil map"]
@@ -75,22 +54,39 @@ def if_you_give_a_seed_a_fertilizer_2(mappings):
                 range_start, range_range = current_ranges.pop(0)
 
                 for dst_start, src_start, rge in current_mapping:
-                    # src_end = src_start + rge
-                    #
-                    # if src_start <= range_start < src_end:
 
-                        # start_delta = range_start - src_start
-                        # split_loc = range_end - src_end
-                        #
-                        # if split_loc >= 0:
-                        #     remaining_range = range_end - split_loc
-                        #
-                        #     current_ranges.append((split_loc, split_loc + remaining_range))
-                        # else:
-                        #     new_ranges.append((
-                        #         dst_start + start_delta,
-                        #         dst_start + start_delta + (range_end - range_start)
-                        #     ))
+                    if src_start <= range_start < src_start + rge:
+                        checked_tuple, split_tuple = find_split(range_start, range_range, src_start, rge)
+
+                        new_start = rescale(range_start, src_start, dst_start)
+                        # new_ranges.append((new_start, checked_tuple[1]))
+
+                        range_start = new_start
+                        range_range = checked_tuple[1]
+
+                        if split_tuple:
+                            current_ranges.append(split_tuple)
+
+                        break
+
+                new_ranges.append((range_start, range_range))
+
+                # src_end = src_start + rge
+                #
+                # if src_start <= range_start < src_end:
+
+                # start_delta = range_start - src_start
+                # split_loc = range_end - src_end
+                #
+                # if split_loc >= 0:
+                #     remaining_range = range_end - split_loc
+                #
+                #     current_ranges.append((split_loc, split_loc + remaining_range))
+                # else:
+                #     new_ranges.append((
+                #         dst_start + start_delta,
+                #         dst_start + start_delta + (range_end - range_start)
+                #     ))
 
             current_ranges, new_ranges = new_ranges, current_ranges
 
