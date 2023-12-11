@@ -60,7 +60,7 @@ if __name__ == '__main__':
     universe_1, exp_rows, exp_cols = create_universe(inp_file)
     galaxies_1 = get_galaxy_coords(universe_1)
 
-    cosmic_expansion(galaxies_1, exp_rows, exp_cols, scaling_factor=1)
+    cosmic_expansion(galaxies_1, exp_rows, exp_cols, scaling_factor=2 - 1)
 
     inp_file = open("universe", "r")
     universe_2, exp_rows, exp_cols = create_universe(inp_file)
